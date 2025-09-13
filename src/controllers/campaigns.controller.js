@@ -1,4 +1,3 @@
-// controllers/campaign.controller.js
 import axios from "axios";
 import { asyncHandler } from "../utils/asynchandler.js";
 import { Communication } from "../models/communication_log.model.js";
@@ -15,8 +14,7 @@ import { sanitizeSegmentRules } from "../utils/sanitizeSegmentRules.js";
 
 // Create
 export const createCampaign = asyncHandler(async (req, res) => {
-  // Assume req.body already validated by your Zod CampaignCreateIn:
-  // { name, message, segmentRules, createdBy }
+
   const campaign = await Campaign.create({
     createdBy: req.body.createdBy,
     name: req.body.name,
@@ -26,7 +24,6 @@ export const createCampaign = asyncHandler(async (req, res) => {
     status: "draft",
   });
 
-  // Find audience based on req.body.segmentRules (you already built a rule-builder)
   const audience = await Customer.find(req.body.segmentRules).select("_id name email phone");
   const audienceSize = audience.length;
 
@@ -61,7 +58,6 @@ export const createCampaign = asyncHandler(async (req, res) => {
   });
 });
 
-// List (by creator with pagination)
 export const listCampaigns = asyncHandler(async (req, res) => {
   const { page, limit, status } = CampaignListQ.parse(req.query);
   const filter = {};

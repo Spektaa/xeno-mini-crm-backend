@@ -5,32 +5,6 @@ import { Order } from "../models/order.model.js";
 import { Customer } from "../models/customer.model.js";
 import { OrderIn } from "../validators/order.validator.js";
 
-/** --------------------------
- * Helpers
- * -------------------------*/
-async function incCustomerStats(
-  customerId,
-  { amount = 0, visitDelta = 0, lastActive = true, ts = new Date() } = {}
-) {
-  if (!customerId) return null;
-  const update = {
-    ...(amount ? { $inc: { totalSpend: amount } } : {}),
-    ...(visitDelta ? { $inc: { visits: visitDelta } } : {}),
-  };
-  if (lastActive) {
-    update.$set = { ...(update.$set || {}), lastActive: ts };
-  }
-  return Customer.findByIdAndUpdate(customerId, update, { new: true }).lean();
-}
-
-async function decCustomerSpend(customerId, amount = 0) {
-  if (!customerId || !amount) return null;
-  return Customer.findByIdAndUpdate(
-    customerId,
-    { $inc: { totalSpend: -Math.abs(amount) } },
-    { new: true }
-  ).lean();
-}
 
 /** --------------------------
  * Create Order

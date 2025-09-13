@@ -74,22 +74,6 @@ export const deleteCustomer = asyncHandler(async (req, res) => {
   res.json({ ok: true, message: "Deleted" });
 });
 
-// Utility: bump stats (you can call this from order flow or cron)
-export const bumpCustomerStats = asyncHandler(async (req, res) => {
-  const { id } = req.params; // customerId
-  const { spendDelta = 0, visitDelta = 0 } = req.body;
-
-  const doc = await Customer.findByIdAndUpdate(
-    id,
-    {
-      $inc: { totalSpend: spendDelta, visits: visitDelta },
-      $set: { lastActive: new Date() }
-    },
-    { new: true }
-  );
-  if (!doc) throw new AppError("Customer not found", 404);
-  res.json({ ok: true, data: doc });
-});
 
 export const previewAudience = asyncHandler(async (req, res) => {
   const { segmentRules, limit = 20 } = req.body;

@@ -1,7 +1,7 @@
 import mongoose , {Schema} from "mongoose"
 
 
-const campaignSchema = new mongoose.Schema({
+const campaignSchema = new Schema({
   createdBy: { type: String, required: true }, // Clerk userId or Google sub
   name: { type: String, required: true },
   segmentRules: { type: Object, required: true },
