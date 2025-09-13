@@ -1,10 +1,14 @@
 import { z } from "zod";
 
 export const CustomerIn = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.email("Invalid email format"),
+  name: z.string().min(1, "Name required"),
+  email: z.string().email(),
   phone: z.string().optional(),
-  totalSpend: z.number().nonnegative().default(0),
-  lastActive: z.preprocess((val) => (val ? new Date(val) : new Date()), z.date()),
-  visits: z.number().int().nonnegative().default(0)
+  totalSpend: z.coerce.number().finite().optional(),
+  visits: z.coerce.number().int().optional(),
+  lastActive: z.preprocess(
+    (v) => (typeof v === "string" && v ? new Date(v) : v),
+    z.date().optional()
+  ),
+  city: z.string().optional(),
 });

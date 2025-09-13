@@ -8,6 +8,7 @@ import campaignRoutes from "./routes/campaigns.route.js";
 import aiRoutes from "./routes/ai.routes.js";
 import nlRoutes from "./routes/nl.routes.js";
 import deliveryRoutes from "./routes/delivery.routes.js";
+import customerSearchRoutes from "./routes/customer.search.routes.js";
 
 
 const app = express();
@@ -40,7 +41,8 @@ app.use("/api/v1/campaigns" , campaignRoutes )
 app.use("/api/v1/ai", aiRoutes);
 app.use("/api/v1/nl", nlRoutes);
 app.use("/api/v1/delivery", deliveryRoutes);
-
+// ...
+app.use("/api/v1/customersearch", customerSearchRoutes);
 
 
 

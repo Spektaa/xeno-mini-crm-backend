@@ -20,7 +20,7 @@ export const vendorSend = asyncHandler(async (req, res) => {
   const vendorResponse = isSuccess ? "Delivered OK" : "Simulated vendor failure";
 
   // Callback (Delivery Receipt)
-  await axios.post(`${process.env.API_BASE_URL}/api/v1/delivery-receipt`, {
+  await axios.post(`https://xeno-mini-crm-backend-4vjf.onrender.com/api/v1/delivery-receipt`, {
     campaignId: input.campaignId,
     customerId: input.customerId,
     status,
@@ -32,10 +32,6 @@ export const vendorSend = asyncHandler(async (req, res) => {
   return res.json({ ok: true, status });
 });
 
-/**
- * Delivery Receipt API: Updates the communication log.
- * (Batch consumer alternative is provided below.)
- */
 export const deliveryReceipt = asyncHandler(async (req, res) => {
   const input = DeliveryReceiptIn.parse(req.body);
 

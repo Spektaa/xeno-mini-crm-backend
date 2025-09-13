@@ -1,3 +1,5 @@
+import Papa from "papaparse";
+import fs from "fs/promises";
 import { asyncHandler } from "../utils/asynchandler.js";
 import { AppError } from "../utils/AppError.js";
 import { Customer } from "../models/customer.model.js";
@@ -80,4 +82,85 @@ export const previewAudience = asyncHandler(async (req, res) => {
   const filter = rulesToMongo(segmentRules || {});
   const rows = await Customer.find(filter).limit(Math.min(limit, 100));
   return res.json({ ok: true, data: rows, count: rows.length });
+});
+
+
+export const bulkCreateCustomers = asyncHandler(async (req, res) => {
+  if (!req.file?.path) throw new AppError("No CSV provided", 400);
+
+  const dryRun = req.query.dryRun === "1" || req.body?.dryRun === true;
+
+  const csv = await fs.readFile(req.file.path, "utf8");
+  // cleanup temp file
+  await fs.unlink(req.file.path).catch(() => {});
+
+  const parsed = Papa.parse(csv, {
+    header: true,
+    skipEmptyLines: "greedy",
+    transformHeader: (h) => h.trim().toLowerCase(),
+    transform: (v) => (typeof v === "string" ? v.trim() : v),
+  });
+
+  const rows = (parsed.data || []).filter((r) =>
+    Object.values(r).some((v) => (v ?? "") !== "")
+  );
+
+  const results = [];
+  let received = rows.length;
+  let accepted = 0;
+  let inserted = 0;
+  let duplicates = 0;
+  let rejected = 0;
+
+  for (let i = 0; i < rows.length; i++) {
+    const raw = rows[i];
+    const rowNo = i + 2; // header is row 1
+    const key = raw.email || `row-${rowNo}`;
+
+    try {
+      const data = CustomerIn.parse(raw);
+
+      // duplicate check
+      const exists = await Customer.findOne({ email: data.email }).lean();
+      if (exists) {
+        duplicates++;
+        accepted++; // it’s a valid row, but already exists
+        results.push({
+          row: rowNo,
+          key,
+          status: "duplicate",
+          issues: [{ path: "email", message: "Email already exists" }],
+        });
+        continue;
+      }
+
+      if (!dryRun) {
+        await Customer.create(data);
+        inserted++;
+      }
+      accepted++;
+      results.push({ row: rowNo, key, status: "ok" });
+    } catch (err) {
+      rejected++;
+      const message =
+        err?.issues?.map((e) => `${e.path.join(".")}: ${e.message}`).join("; ") ||
+        err?.message ||
+        "Validation failed";
+      // Shape as `issues[]` for the UI
+      results.push({
+        row: rowNo,
+        key,
+        status: "error",
+        issues: [{ path: "row", message }],
+      });
+    }
+  }
+
+  // send everything the UI needs
+  return res.json({
+    ok: rejected === 0,
+    dryRun,
+    summary: { received, accepted, inserted, duplicates, rejected },
+    rows: results, // include both ok & error/duplicate rows
+  });
 });
