@@ -16,98 +16,92 @@ It enables customer segmentation, campaign creation & delivery, and integrates A
 
 ## 📂 Folder Structure
 
-### ✅ Mermaid Diagram (GitHub-compatible, no cycles)
+### ✅ Mermaid Diagram (GitHub‑compatible)
 ```mermaid
 flowchart TD
   ROOT[backend/]
-
-  %% top-level files
   ROOT --> APP[app.js]
   ROOT --> ENV[.env]
   ROOT --> GIT[.gitignore]
-  ROOT --> PRETTIER[.prettierrc]
+  ROOT --> PRETTIER[.prettierignore]
+  ROOT --> PRC[.prettierrc]
   ROOT --> CONST[constants.js]
   ROOT --> PKG[package.json]
   ROOT --> PKGLOCK[package-lock.json]
+  ROOT --> SRC[src/]
 
-  %% src folder as a subgraph
-  ROOT --> SRC_NODE[src/]
+  subgraph SRC_SG[src/]
+    SRCIDX[index.js]
+    CTRL[controllers/]
+    DBF[db/]
+    MIDDLE[middleware/]
+    MODS[models/]
+    RTS[routes/]
+    SRV[services/]
+    UTL[utils/]
+    VAL[validators/]
+  end
 
-  subgraph SRC[src/]
-    SRC_NODE[src/]
+  %% controllers
+  subgraph CTRL_SG[controllers/]
+    C1[campaigns.controller.js]
+    C2[communications.controller.js]
+    C3[customer.controller.js]
+    C4[delivery.controller.js]
+    C5[nl2rules.controller.js]
+    C6[order.controller.js]
+  end
 
-    %% groups inside src
-    SRC_NODE --> CTRL[controllers/]
-    SRC_NODE --> DBF[db/]
-    SRC_NODE --> MIDDLE[middleware/]
-    SRC_NODE --> MODS[models/]
-    SRC_NODE --> RTS[routes/]
-    SRC_NODE --> SRV[services/]
-    SRC_NODE --> UTL[utils/]
-    SRC_NODE --> VAL[validators/]
-    SRC_NODE --> SRCIDX[index.js]
+  %% db
+  subgraph DB_SG[db/]
+    DBI[index.js]
+  end
 
-    %% controllers
-    subgraph CTRL_SG[controllers/]
-      C1[campaigns.controller.js]
-      C2[communications.controller.js]
-      C3[customer.controller.js]
-      C4[delivery.controller.js]
-      C5[nl2rules.controller.js]
-      C6[order.controller.js]
-    end
+  %% middleware
+  subgraph MID_SG[middleware/]
+    M1[protect.js]
+    M2[validate.middleware.js]
+  end
 
-    %% db
-    subgraph DB_SG[db/]
-      DBI[index.js]
-    end
+  %% models
+  subgraph MOD_SG[models/]
+    Mdl1[campaign.model.js]
+    Mdl2[communication_log.model.js]
+    Mdl3[customer.model.js]
+    Mdl4[order.model.js]
+  end
 
-    %% middleware
-    subgraph MID_SG[middleware/]
-      M1[protect.js]
-      M2[validate.middleware.js]
-    end
+  %% routes
+  subgraph ROUTE_SG[routes/]
+    R1[ai.routes.js]
+    R2[campaigns.route.js]
+    R3[communications.routes.js]
+    R4[customer.route.js]
+    R5[delivery.routes.js]
+    R6[nl.routes.js]
+    R7[orders.route.js]
+  end
 
-    %% models
-    subgraph MOD_SG[models/]
-      Mdl1[campaign.model.js]
-      Mdl2[communication_log.model.js]
-      Mdl3[customer.model.js]
-      Mdl4[order.model.js]
-    end
+  %% services
+  subgraph SRV_SG[services/]
+    S1[ai.service.js]
+    S2[nl2rules.llm.js]
+  end
 
-    %% routes
-    subgraph ROUTE_SG[routes/]
-      R1[ai.routes.js]
-      R2[campaigns.route.js]
-      R3[communications.routes.js]
-      R4[customer.route.js]
-      R5[delivery.routes.js]
-      R6[nl.routes.js]
-      R7[orders.route.js]
-    end
+  %% utils
+  subgraph UTL_SG[utils/]
+    U1[AppError.js]
+    U2[asynchandler.js]
+    U3[rulesToMongo.js]
+    U4[sanitizeSegmentRules.js]
+  end
 
-    %% services
-    subgraph SRV_SG[services/]
-      S1[ai.service.js]
-      S2[nl2rules.llm.js]
-    end
-
-    %% utils
-    subgraph UTL_SG[utils/]
-      U1[AppError.js]
-      U2[asynchandler.js]
-      U3[rulesToMongo.js]
-      U4[sanitizeSegmentRules.js]
-    end
-
-    %% validators
-    subgraph VAL_SG[validators/]
-      V1[campaign.validator.js]
-      V2[communication.validator.js]
-      V3[customer.validator.js]
-      V4[order.validator.js]
-    end
+  %% validators
+  subgraph VAL_SG[validators/]
+    V1[campaign.validator.js]
+    V2[communication.validator.js]
+    V3[customer.validator.js]
+    V4[order.validator.js]
   end
 ```
 
@@ -166,58 +160,13 @@ backend/
 
 ---
 
-## 🏗️ System Architecture
-```mermaid
-flowchart LR
-  subgraph CLIENT[Frontend (React/Vite)]
-    UI[Campaign UI\nRule Builder + History]
-    AUTH[Clerk/Google OAuth\nSession Token]
-  end
-
-  subgraph API[Backend (Node/Express)]
-    ROUTES[/REST Routes/]
-    CTRL[Controllers]
-    ZOD[Zod Validators]
-    MID[Middleware]
-    UTIL[Utils]
-  end
-
-  subgraph AI[AI Provider]
-    LLM[(OpenAI / Vertex / Local LLM)]
-  end
-
-  subgraph DB[(MongoDB)]
-    CUST[(customers)]
-    ORD[(orders)]
-    CAMP[(campaigns)]
-    LOG[(communication_log)]
-  end
-
-  subgraph VENDOR[Dummy Vendor API]
-    SIM[Delivery Simulator\n(90% SENT / 10% FAILED)]
-  end
-
-  AUTH -- Bearer token --> MID
-  UI -->|create/preview| ROUTES
-  ROUTES --> MID --> ZOD --> CTRL
-  CTRL --> DB
-  CTRL --> LLM
-  CTRL --> SIM
-  SIM --> ROUTES:::receipt
-  classDef receipt stroke-dasharray: 5 5;
-  ROUTES --> CTRL --> LOG
-```
-
----
-
 ## 🔑 Key Features
 - ✅ Customer & Order ingestion APIs (with validation)  
 - ✅ Campaign creation with **dynamic rule builder**  
 - ✅ Campaign history + delivery stats  
 - ✅ Dummy vendor API simulating SENT/FAILED + Delivery Receipt logging  
 - ✅ Google OAuth 2.0 authentication (Clerk)  
-- ✅ AI-powered **Natural Language → Rules** & **Message Suggestions**   
-
+- ✅ AI-powered **Natural Language → Rules** & **Message Suggestions**  
 ---
 
 ## 🚀 Running Locally
