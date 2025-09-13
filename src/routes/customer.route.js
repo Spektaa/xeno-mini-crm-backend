@@ -12,7 +12,6 @@ import {
   getCustomer,
   updateCustomer,
   deleteCustomer,
-  bumpCustomerStats,
 } from "../controllers/customer.controller.js";
 
 const router = Router();
@@ -39,7 +38,5 @@ router.patch("/:id", protect, validate(UpdateCustomerSchema), updateCustomer);
 // Delete
 router.delete("/:id", protect, deleteCustomer);
 
-// // Utility: bump stats for a customer
-// router.post("/:id/bump", protect, validate(BumpSchema), bumpCustomerStats);
 
 export default router;
