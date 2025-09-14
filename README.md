@@ -15,8 +15,11 @@ This is the backend of the **Mini CRM Platform** built for the **Xeno SDE Intern
 
 ---
 
-## 📂 Folder Structure ### ✅ Mermaid Diagram (GitHub‑compatible)
-mermaid
+## 📂 Folder Structure
+
+### ✅ Mermaid Diagram (GitHub‑compatible)
+
+```mermaid
 flowchart TD
   ROOT[backend/]
   ROOT --> APP[app.js]
@@ -102,7 +105,11 @@ flowchart TD
     V3[customer.validator.js]
     V4[order.validator.js]
   end
+```
+
 ### Plain Tree
+
+```
 backend/
 ├─ app.js
 ├─ .env
@@ -152,6 +159,8 @@ backend/
       ├─ communication.validator.js
       ├─ customer.validator.js
       └─ order.validator.js
+```
+
 ---
 
 ## 🚀 Local Setup
@@ -276,8 +285,9 @@ Most routes are protected with Clerk. Send **`Authorization: Bearer <token>`**.
 ## 📦 Deployment Tips
 
 * Set env vars in hosting provider (Render/Railway/Heroku/etc.)
-* This one is deployed on Render 
 * Configure CORS to include your frontend origin(s)
+* Add health check route if your host expects it (e.g., `/health`)
+
 ---
 
 **Made with ♥ for the Xeno SDE Internship 2025.**
