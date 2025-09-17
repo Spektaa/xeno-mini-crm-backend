@@ -1,4 +1,3 @@
-
 import { Router } from "express";
 import { Customer } from "../models/customer.model.js";
 import { protect } from "../middleware/protect.js";

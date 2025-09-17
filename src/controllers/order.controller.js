@@ -6,12 +6,6 @@ import { Customer } from "../models/customer.model.js";
 import { OrderIn } from "../validators/order.validator.js";
 
 
-/** --------------------------
- * Create Order
- * - Validate with Zod (no client amount)
- * - Save via .save() so pre('save') computes amount from items
- * - Update customer stats in txn using computed amount
- * -------------------------*/
 export const createOrder = asyncHandler(async (req, res) => {
   const payload = OrderIn.parse(req.body); // no amount allowed
 
@@ -303,9 +297,7 @@ export const deleteOrder = asyncHandler(async (req, res) => {
   }
 });
 
-/** --------------------------
- * Customer-specific orders
- * -------------------------*/
+
 export const listOrdersByCustomer = asyncHandler(async (req, res) => {
   const { customerId } = req.params;
   const { page = 1, limit = 10 } = req.query;

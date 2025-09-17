@@ -2,7 +2,7 @@ import mongoose , {Schema} from "mongoose"
 
 
 const campaignSchema = new Schema({
-  createdBy: { type: String, required: true }, // Clerk userId or Google sub
+  createdBy: { type: String, required: true }, 
   name: { type: String, required: true },
   segmentRules: { type: Object, required: true },
   audienceSize: { type: Number, default: 0 },

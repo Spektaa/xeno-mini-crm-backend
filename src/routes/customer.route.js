@@ -1,9 +1,7 @@
-// routes/customers.routes.js
 import { Router } from "express";
-import { z } from "zod";
 import multer from "multer";
-import { protect } from "../middleware/protect.js";          // export const protect = requireAuth();
-import { validate } from "../middleware/validate.middleware.js";        // the safeParse middleware you shared
+import { protect } from "../middleware/protect.js";         
+import { validate } from "../middleware/validate.middleware.js";        
 import { CustomerIn } from "../validators/customer.validator.js";
 
 import {
@@ -26,6 +24,7 @@ const UpdateCustomerSchema = CustomerIn.partial();      // partial updates allow
 // Create
 router.route("/").post( validate(CreateCustomerSchema), createCustomer); 
 
+//get
 router.get("/", protect, listCustomers); 
 
 // Read

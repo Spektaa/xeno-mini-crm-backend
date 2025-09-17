@@ -4,10 +4,7 @@ import { AppError } from "../utils/AppError.js";
 import { asyncHandler } from "../utils/asynchandler.js";
 import { DeliveryReceiptIn, VendorSendIn } from "../validators/communication.validator.js";
 
-/**
- * Vendor Simulator: ~90% SENT / ~10% FAILED
- * After "sending", it calls back your Delivery Receipt API.
- */
+
 export const vendorSend = asyncHandler(async (req, res) => {
   const input = VendorSendIn.parse(req.body);
 
@@ -19,7 +16,6 @@ export const vendorSend = asyncHandler(async (req, res) => {
   const status = isSuccess ? "SENT" : "FAILED";
   const vendorResponse = isSuccess ? "Delivered OK" : "Simulated vendor failure";
 
-  // Callback (Delivery Receipt)
   await axios.post(`https://xeno-mini-crm-backend-4vjf.onrender.com/api/v1/delivery-receipt`, {
     campaignId: input.campaignId,
     customerId: input.customerId,

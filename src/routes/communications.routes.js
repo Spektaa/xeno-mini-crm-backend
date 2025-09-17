@@ -7,8 +7,6 @@ import {
   getCommunication,
   updateCommunication,
   deleteCommunication,
-  // optional webhook controller (included in my earlier controller rewrite)
-  recordDeliveryReceipt,
 } from "../controllers/communications.controller.js";
 
 import { protect } from "../middleware/protect.js";
@@ -37,11 +35,6 @@ router.patch("/:id", protect, validate(UpdateCommunicationSchema), updateCommuni
 // Delete
 router.delete("/:id", protect, deleteCommunication);
 
-/** Optional: Delivery receipt webhook
- * If your vendor simulator posts back delivery status, expose this.
- * Usually webhooks are NOT auth-protected; use a shared-secret header if needed.
- * The controller validates the body itself, so no validate() here is fine.
- */
-router.post("/receipt", recordDeliveryReceipt);
+
 
 export default router;

@@ -23,10 +23,12 @@ router.get("/:id", protect, getOrder);
 router.patch("/:id", protect, updateOrder);
 router.delete("/:id", protect, deleteOrder);
 
+
 // Convenience
 router.get("/by-customer/:customerId", protect, listOrdersByCustomer);
 
-// Analytics
+//unsed(for later updates)
+//Analytics
 router.get("/analytics/revenue", protect, revenueSummary);
 router.get("/analytics/top-customers", protect, topCustomers);
 
